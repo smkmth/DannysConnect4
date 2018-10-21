@@ -1,6 +1,6 @@
 #pragma once
 #include "GameData.h"
-#include "CBoard.h"
+#include "CBoardActions.h"
 #include "CConsole.h"
 #include <Windows.h>
 #include <iostream>
@@ -25,7 +25,6 @@ public:
 	void SetGameState( int );
 	void GameLoop();
 	void Reset();
-	//int PrintDialogue(const char* _message, bool _yesOrNoOption, bool _clearScreen);
 
 
 
@@ -33,25 +32,24 @@ private:
 
 	int g_iActivePlayer;
 
-	CBoard* pCurrentBoard;
+	CBoardActions* pCurrentBoardActions;
 
-	CConsole* pConsole;
+	CConsole*		pConsole;
+	CBoard*			pBoard;
 
 	GameData sGameData;
 
-
-
-	int g_iGameState = sGameData.k_iState_Playing;
+	int g_iGameState;
 
 
 	// special values returned by (and passed to) fn GetPlayerInput()
 	// n.b. all valid rows are in range 0 to ( k_iBoardWidth - 1 )
 
-	const int k_iPlayerInput_Quit		= pCurrentBoard->GetBoardWidth();
+	int k_iPlayerInput_Quit;
 
 	// n.b. -ve values from -1 to -k_iBoardWidth are used to return input if the chosen column is full
-	const int k_iPlayerInput_None		= -(pCurrentBoard->GetBoardWidth() + 1 );
-	const int k_iPlayerInput_Invalid	= -(pCurrentBoard->GetBoardWidth() + 3 );
+	int k_iPlayerInput_None;
+	int k_iPlayerInput_Invalid;
 
 };
 

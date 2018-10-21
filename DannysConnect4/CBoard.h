@@ -1,60 +1,27 @@
-#pragma once
-#include <Windows.h>
-#include <iostream>
-#include "GameData.h"
+#pragma once				   
 
-
-
-class Game;
-class CConsole;
-
-class CBoard
-{
+class CBoard {
 private:
+	int k_iBoardWidth;
+	int k_iBoardHeight;
 
+	int* m_iaBoardArray;
 
-
-	Game* pCurrentGame;
-
-	CConsole* pConsole;
-
-	GameData sGameData;
-
-	static const int k_iBoardWidth = 7;
-	static const int k_iBoardHeight = 6;
-	static const int k_iWinLineLength = 4;
-	int m_iSpacesRemaining = k_iBoardWidth * k_iBoardHeight;
-
-
-	int g_aaiWinningRow[k_iWinLineLength][2];
-	
+	int k_iWinLineLength = 4;
 
 public:
-
-
-	CBoard(Game*, CConsole*);
+	CBoard();
 
 	~CBoard();
 
-	//store the board array here cos basically everyone needs it
-	int g_aaiBoard[k_iBoardWidth][k_iBoardHeight];
-
-	void RenderBoard();
-	void MakeAMove(int);
-	void Update_CheckForWin();
-	void ResetBoard();
-	bool Update_CheckRows();
-	bool Update_CheckDiagonalLURD();
-	bool Update_CheckDiagonalRDLU();
-	bool Update_CheckColumns();
-
+	int* GetBoard();
+	int GetBoardElement(int x, int y);
+	void SetBoardElement(int x, int y, int value);
 
 	int GetBoardWidth();
 	int GetBoardHeight();
-	int GetSpacesRemaining();
-	void SetSpacesRemaining(int);
-	void DecrimentSpacesRemaining();
+
+
 
 
 };
-

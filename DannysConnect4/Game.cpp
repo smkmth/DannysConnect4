@@ -24,14 +24,28 @@ Game::Game()
 	CConsole console;
 	pConsole = &console;
 
-	CBoard board(this, pConsole);
-	pCurrentBoard = &board;
+	CBoardActions board(this, pConsole);
+	pCurrentBoardActions = &board;
+	pBoard = pCurrentBoardActions->GetCurrentBoard();
+
+
+
+
+
+	k_iPlayerInput_Quit = pBoard->GetBoardWidth();
+	k_iPlayerInput_None = -(pBoard->GetBoardWidth() + 1);
+	k_iPlayerInput_Invalid = -(pBoard->GetBoardWidth() + 3);
+	
+	
+	int g_iGameState = sGameData.k_iState_Playing;
 	GameLoop();
+
 
 }
 
 Game::~Game()
 {
+
 }
 
 void Game::GameLoop() {
@@ -48,9 +62,9 @@ void Game::GameLoop() {
 			int iPlayerInput = k_iPlayerInput_None;
 
 			//TODO this takes multiple inputs at once - usefull for testing 
-			while (iPlayerInput < 0 && iPlayerInput < pCurrentBoard->GetBoardWidth())
+			while (iPlayerInput < 0 && iPlayerInput < pBoard->GetBoardWidth())
 			{
-				pCurrentBoard->RenderBoard();
+				pCurrentBoardActions->RenderBoard();
 				// we pass the last input so this can print an appropriate message if it was invalid
 				iPlayerInput = GetPlayerInput(iPlayerInput);
 			}
@@ -72,10 +86,10 @@ void Game::GameLoop() {
 								
 			}
 
-			pCurrentBoard->MakeAMove(iPlayerInput);
+			pCurrentBoardActions->MakeAMove(iPlayerInput);
 
 			// check for a draw
-			if (pCurrentBoard->GetSpacesRemaining() == 0 )
+			if (pCurrentBoardActions->GetSpacesRemaining() == 0 )
 			{
 				
 				g_iGameState = sGameData.k_iState_Draw;
@@ -83,7 +97,7 @@ void Game::GameLoop() {
 			}
 			else 
 			{
-				pCurrentBoard->DecrimentSpacesRemaining();
+				pCurrentBoardActions->DecrimentSpacesRemaining();
 
 			}
 		}
@@ -129,7 +143,7 @@ void Game::GameLoop() {
 		}
 
 		g_iGameState = sGameData.k_iState_Playing;
-		pCurrentBoard->ResetBoard();
+		pCurrentBoardActions->ResetBoard();
 		// (pCurrentBoard->GetBoardWidth() * pCurrentBoard->GetBoardHeight);
 
 	}//while( !bQuitGame ){...
@@ -159,7 +173,7 @@ int	Game::GetPlayerInput(int iArgLastInput)
 		}
 	}
 
-	std::cout << "\nPlease input a column number (1 to " << pCurrentBoard->GetBoardWidth() << "), or 'q' to quit, then press return:\n";
+	std::cout << "\nPlease input a column number (1 to " << pBoard->GetBoardWidth() << "), or 'q' to quit, then press return:\n";
 		
 	// get first character from stdin and throw the rest away.
 	// this is necessary otherwise the input requires one cin.getch() 
@@ -180,11 +194,11 @@ int	Game::GetPlayerInput(int iArgLastInput)
 		// so, to get the column index we subtract '1' from chInput and check the value's in the range 
 		// 0 < value < k_iBoardWidth 
 		int iInputColumn = chInput - '1';
-		if( ( 0 <= iInputColumn ) && ( pCurrentBoard->GetBoardWidth() > iInputColumn ) )
+		if( ( 0 <= iInputColumn ) && (pBoard->GetBoardWidth() > iInputColumn ) )
 		{
 			// check this column isn't full (0,0 is top left)
 
-			if(sGameData.k_iBoardSlot_Empty == pCurrentBoard->g_aaiBoard[ iInputColumn ][ 0 ] )
+			if(sGameData.k_iBoardSlot_Empty == pBoard->GetBoardElement(iInputColumn, 0 ))
 			{
 	 			// set input value and break from loop
 				iReturnValue = iInputColumn;
@@ -206,7 +220,7 @@ void Game::Reset()
 {
 	// reset board
 	//memset( pCurrentBoard->g_aaiBoard, sGameData.k_iBoardSlot_Empty, sizeof( pCurrentBoard->g_aaiBoard) );
-	pCurrentBoard->ResetBoard();
+	pCurrentBoardActions->ResetBoard();
 	// randomise 1st player
 	// N.B. ( rand() & 1) will give 0 or 1, so add 1 to get 1 or 2
 	g_iActivePlayer = ( rand() & 1 ) + 1;
